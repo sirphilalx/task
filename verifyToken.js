@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 // middleware for verifying token
 function verifyToken(req, res, next) {
   if (req.headers.authorization !== undefined) {
@@ -7,7 +9,7 @@ function verifyToken(req, res, next) {
       if (!err) {
         next();
       } else {
-        res.status(403).send({ message: "Something went wrong" });
+        res.status(403).send({ message: "Invalid token provided" });
       }
     });
   } else {
