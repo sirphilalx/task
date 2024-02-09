@@ -4,8 +4,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-// importing user models
+// importing models
 const userModel = require("./models/userModel");
+const verifyToken = require("./verifyToken");
 // using the express in the middleware
 const app = express();
 app.use(express.json());
@@ -71,23 +72,6 @@ app.get("/users", verifyToken, async (req, res) => {
     res.status(500).send({ message: "Something went wrong" });
   }
 });
-
-// middleware for verifying token
-function verifyToken(req, res, next) {
-  if (req.headers.authorization !== undefined) {
-    let token = req.headers.authorization.split(" ")[1];
-
-    jwt.verify(token, "cooperative-app", (err, data) => {
-      if (!err) {
-        next();
-      } else {
-        res.status(403).send({ message: "Something went wrong" });
-      }
-    });
-  } else {
-    res.send({ message: "Please provide a token" });
-  }
-}
 
 // connection to database
 mongoose.connect(process.env.DB_URL);
