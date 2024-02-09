@@ -61,6 +61,34 @@ app.post("/login", async (req, res) => {
     res.send({ message: "something went wrong" });
   }
 });
+
+app.get("/users", verifyToken, async (req, res) => {
+  try {
+    let users = await userModel.find();
+    res.send(users);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ message: "Something went wrong" });
+  }
+});
+
+// middleware for verifying token
+function verifyToken(req, res, next) {
+  if (req.headers.authorization !== undefined) {
+    let token = req.headers.authorization.split(" ")[1];
+
+    jwt.verify(token, "cooperative-app", (err, data) => {
+      if (!err) {
+        next();
+      } else {
+        res.status(403).send({ message: "Something went wrong" });
+      }
+    });
+  } else {
+    res.send({ message: "Please provide a token" });
+  }
+}
+
 // connection to database
 mongoose.connect(process.env.DB_URL);
 const db = mongoose.connection;
